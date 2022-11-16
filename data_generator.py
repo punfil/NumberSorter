@@ -7,7 +7,7 @@ def generate_records():
     with open("data.txt", "w") as file:
         for _ in range(number_of_records):
             record = Record(random(), random(), random())
-            file.write(record.serialize() + "\n")
+            file.write(record.serialize())
 
 
 def enter_records():

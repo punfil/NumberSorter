@@ -1,24 +1,28 @@
 class Block:
     def __init__(self, size=4):
         self._size = size
-        self._data = [None for _ in range(size)]
+        self._data = []
 
-    def get_record_from_block(self, index):
-        assert (index >= 0)
-        assert (index < len(self._data))
-        return self._data[index]
+    def is_full(self):
+        return len(self._data) == self._size
+
+    def is_empty(self):
+        return len(self._data) == 0
+
+    def get_first_element(self):
+        if self.is_empty() is False:
+            return self._data.pop(0)
+        return None
 
     def serialize(self):
         returning = ""
         for record in self._data:
-            if record is not None:
-                returning += record.serialize()
-            else:
-                returning += "None\n"  # IDK if that's ok, probably not
+            returning += record.serialize()
         return returning
 
+
     def clear(self):
-        self._data = [None for _ in range(self._size)]
+        self._data = []
 
     @property
     def data(self):

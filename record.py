@@ -7,6 +7,21 @@ class Record:
     def calculate_product_of_probabilities(self):
         return self._a_probability + self._b_probability - self._probabilities_sum
 
+    def __gt__(self, other):
+        if self.calculate_product_of_probabilities() > other.calculate_product_of_probabilities():
+            return True
+        else:
+            return False
+
+    def __lt__(self, other):
+        if self.calculate_product_of_probabilities() < other.calculate_product_of_probabilities():
+            return True
+        else:
+            return False
+
+    def __eq__(self, other):
+        return self.calculate_product_of_probabilities() == other.calculate_product_of_probabilities
+
     def deserialize(self, record_loaded):
         elements = record_loaded.split(' ')
         self._a_probability = elements[0]
