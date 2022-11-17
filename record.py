@@ -69,5 +69,17 @@ class DebugRecord(Record):
         else:
             return False
 
+    def __le__(self, other):
+        if self._a_probability <= other._a_probability:
+            return True
+        else:
+            return False
+
+    def __ge__(self, other):
+        if self._a_probability >= other._a_probability:
+            return True
+        else:
+            return False
+
     def __eq__(self, other):
         return self._a_probability == other._a_probability

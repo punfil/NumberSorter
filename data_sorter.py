@@ -1,7 +1,7 @@
 import data_generator
 import os
 from tape import Tape
-
+from validation import validate
 
 def display_menu():
     print("Hello and welcome to the Disk Sorter!")
@@ -19,6 +19,8 @@ def choose_menu_option():
 def distribution(input_tape):
     tape1 = Tape("tape1.txt")
     tape2 = Tape("tape2.txt")
+    tape1.clear_file()
+    tape2.clear_file()
     current_tape = tape1
     current_record = None
     switched_tapes = False
@@ -50,6 +52,7 @@ def natural_merging_sort():  # 2+1 edition
         # TODO: Rewrite the whole list from input to output
         return
     tape3 = Tape("tape3.txt")
+    tape3.clear_file()
     phase_count = 0
     while switched_tapes is True:
         last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
@@ -58,10 +61,10 @@ def natural_merging_sort():  # 2+1 edition
         while tape1.end_of_file is False and tape2.end_of_file is False or go_inside is True:
             go_inside = False
             while end_of_series_tape1 is False and end_of_series_tape2 is False:
-                while end_of_series_tape1 is False and curr_tape1 < curr_tape2:
+                while end_of_series_tape1 is False and curr_tape1 <= curr_tape2:
                     tape3.add_record_to_block(curr_tape1)
                     last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
-                while end_of_series_tape2 is False and curr_tape1 > curr_tape2:
+                while end_of_series_tape1 is False and end_of_series_tape2 is False and curr_tape1 > curr_tape2:
                     tape3.add_record_to_block(curr_tape2)
                     last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
             while end_of_series_tape1 is False:
@@ -72,10 +75,10 @@ def natural_merging_sort():  # 2+1 edition
                 last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
             end_of_series_tape1 = False
             end_of_series_tape2 = False
-        while tape1.end_of_file is False:
+        while curr_tape1 is not None:
             tape3.add_record_to_block(curr_tape1)
             last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
-        while tape2.end_of_file is False:
+        while curr_tape2 is not None:
             tape3.add_record_to_block(curr_tape2)
             last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
         tape1.flush_read()
@@ -87,7 +90,7 @@ def natural_merging_sort():  # 2+1 edition
         if switched_tapes is not False: # DEBUG: Remove that in final code
             tape3.clear_file()
         phase_count += 1
-    print(f"Sorted in {phase_count-1} phases!")
+    return phase_count-1
 
 
 def quit_program():
@@ -117,3 +120,5 @@ def run_the_program():
                 quit_program()
             case 5:
                 data_generator.generate_fake_records()
+            case 6:
+                validate(int(input("How many tests do you want to run?")))
