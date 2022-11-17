@@ -3,6 +3,7 @@ import os
 from tape import Tape
 from validation import validate
 
+
 def display_menu():
     print("Hello and welcome to the Disk Sorter!")
     print("1. Automatically generate data")
@@ -87,10 +88,10 @@ def natural_merging_sort():  # 2+1 edition
         tape2.clear_file()
         tape3.flush_write()
         tape1, tape2, switched_tapes = distribution(tape3)
-        if switched_tapes is not False: # DEBUG: Remove that in final code
+        if switched_tapes is not False:
             tape3.clear_file()
         phase_count += 1
-    return phase_count-1
+    return phase_count - 1
 
 
 def quit_program():

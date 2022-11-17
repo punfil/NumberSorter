@@ -10,7 +10,6 @@ def generate_records(number_of_records=10):
 
 
 def generate_fake_records(number_of_records=10):
-    number_of_records = 10
     with open("data.txt", "w+") as file:
         for _ in range(number_of_records):
             record = Record(randint(100, 199), randint(100, 199), randint(100, 199))
