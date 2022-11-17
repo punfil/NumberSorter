@@ -76,6 +76,8 @@ def natural_merging_sort():  # 2+1 edition
                 last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
             end_of_series_tape1 = False
             end_of_series_tape2 = False
+            if tape1.end_of_file is True and tape2.end_of_file is True and curr_tape1 is not None and curr_tape2 is not None:
+                go_inside = True
         while curr_tape1 is not None:
             tape3.add_record_to_block(curr_tape1)
             last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
