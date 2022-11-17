@@ -54,7 +54,9 @@ def natural_merging_sort():  # 2+1 edition
     while switched_tapes is True:
         last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
         last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(None)
-        while tape1.end_of_file is False and tape2.end_of_file is False:
+        go_inside = True
+        while tape1.end_of_file is False and tape2.end_of_file is False or go_inside is True:
+            go_inside = False
             while end_of_series_tape1 is False and end_of_series_tape2 is False:
                 while end_of_series_tape1 is False and curr_tape1 < curr_tape2:
                     tape3.add_record_to_block(curr_tape1)
@@ -85,7 +87,7 @@ def natural_merging_sort():  # 2+1 edition
         if switched_tapes is not False: # DEBUG: Remove that in final code
             tape3.clear_file()
         phase_count += 1
-    print(f"Sorted in {phase_count} phases!")
+    print(f"Sorted in {phase_count-1} phases!")
 
 
 def quit_program():
