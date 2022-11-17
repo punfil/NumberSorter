@@ -20,7 +20,6 @@ class Block:
             returning += record.serialize()
         return returning
 
-
     def clear(self):
         self._data = []
 

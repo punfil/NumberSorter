@@ -29,7 +29,7 @@ class Record:
         self._probabilities_sum = elements[2]
 
     def serialize(self):
-        return str(self._a_probability)+" "+str(self._b_probability)+" "+str(self._probabilities_sum)+"\n"
+        return str(self._a_probability) + " " + str(self._b_probability) + " " + str(self._probabilities_sum) + "\n"
 
     @property
     def a_probability(self):
@@ -54,3 +54,20 @@ class Record:
     @probabilities_sum.setter
     def probabilities_sum(self, new_value):
         self._probabilities_sum = new_value
+
+
+class DebugRecord(Record):
+    def __gt__(self, other):
+        if self._a_probability > other._a_probability:
+            return True
+        else:
+            return False
+
+    def __lt__(self, other):
+        if self._a_probability < other._a_probability:
+            return True
+        else:
+            return False
+
+    def __eq__(self, other):
+        return self._a_probability == other._a_probability

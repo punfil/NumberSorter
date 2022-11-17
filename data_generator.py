@@ -1,12 +1,20 @@
 from record import Record
-from random import random
+from random import random, randint
 
 
 def generate_records():
     number_of_records = 10
-    with open("data.txt", "w") as file:
+    with open("data.txt", "w+") as file:
         for _ in range(number_of_records):
             record = Record(random(), random(), random())
+            file.write(record.serialize())
+
+
+def generate_fake_records():
+    number_of_records = 10
+    with open("data.txt", "w+") as file:
+        for _ in range(number_of_records):
+            record = Record(randint(100, 199), randint(100, 199), randint(100, 199))
             file.write(record.serialize())
 
 

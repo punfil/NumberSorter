@@ -16,35 +16,81 @@ def choose_menu_option():
     return option_chosen
 
 
-def natural_merging_sort():  # 2+1 edition
-    input_tape = Tape("data.txt")
+def distribution(input_tape):
     tape1 = Tape("tape1.txt")
     tape2 = Tape("tape2.txt")
-    tape3 = Tape("tape3.txt")
     current_tape = tape1
     current_record = None
-    last_record = None
+    switched_tapes = False
     # Load data from the input tape
     while True:
         last_record = current_record
         current_record = input_tape.get_record_from_block()
         if current_record is None:
             break
-        if last_record is not None and current_record > current_record:
+        if last_record is not None and current_record < last_record:
+            switched_tapes = True
             if current_tape == tape1:
                 current_tape = tape2
             else:
                 current_tape = tape1
         current_tape.add_record_to_block(current_record)
-    tape1.flush_block()
-    tape2.flush_block()
-    pass
+    tape1.flush_write()
+    tape2.flush_write()
+    input_tape.flush_read()
+    return tape1, tape2, switched_tapes
+
+
+def natural_merging_sort():  # 2+1 edition
+    input_tape = Tape("data.txt")
+    tape1, tape2, switched_tapes = distribution(input_tape)
+
+    if switched_tapes is False:
+        print("Whole list already sorted on input!")
+        # TODO: Rewrite the whole list from input to output
+        return
+    tape3 = Tape("tape3.txt")
+    phase_count = 0
+    while switched_tapes is True:
+        last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
+        last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(None)
+        while tape1.end_of_file is False and tape2.end_of_file is False:
+            while end_of_series_tape1 is False and end_of_series_tape2 is False:
+                while end_of_series_tape1 is False and curr_tape1 < curr_tape2:
+                    tape3.add_record_to_block(curr_tape1)
+                    last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
+                while end_of_series_tape2 is False and curr_tape1 > curr_tape2:
+                    tape3.add_record_to_block(curr_tape2)
+                    last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+            while end_of_series_tape1 is False:
+                tape3.add_record_to_block(curr_tape1)
+                last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
+            while end_of_series_tape2 is False:
+                tape3.add_record_to_block(curr_tape2)
+                last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+            end_of_series_tape1 = False
+            end_of_series_tape2 = False
+        while tape1.end_of_file is False:
+            tape3.add_record_to_block(curr_tape1)
+            last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
+        while tape2.end_of_file is False:
+            tape3.add_record_to_block(curr_tape2)
+            last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+        tape1.flush_read()
+        tape2.flush_read()
+        tape1.clear_file()
+        tape2.clear_file()
+        tape3.flush_write()
+        tape1, tape2, switched_tapes = distribution(tape3)
+        if switched_tapes is not False: # DEBUG: Remove that in final code
+            tape3.clear_file()
+        phase_count += 1
+    print(f"Sorted in {phase_count} phases!")
 
 
 def quit_program():
     delete_file("tape1.txt")
     delete_file("tape2.txt")
-    delete_file("tape3.txt")
 
 
 def delete_file(filename):
@@ -53,8 +99,8 @@ def delete_file(filename):
 
 
 def run_the_program():
-    quit_program = False
-    while quit_program is False:
+    b_quit_program = False
+    while b_quit_program is False:
         display_menu()
         menu_option = choose_menu_option()
         match menu_option:
@@ -65,5 +111,7 @@ def run_the_program():
             case 3:
                 natural_merging_sort()
             case 4:
-                quit_program = True
+                b_quit_program = True
                 quit_program()
+            case 5:
+                data_generator.generate_fake_records()
