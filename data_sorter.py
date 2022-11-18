@@ -4,12 +4,15 @@ from tape import Tape
 from validation import validate
 
 
-def display_menu():
+def display_menu(verbose):
     print("Hello and welcome to the Disk Sorter!")
     print("1. Automatically generate data")
     print("2. Enter the data manually")
     print("3. Sort the files")
     print("4. Quit")
+    if verbose == 1:
+        print("5. Generate fake records - int numbers")
+        print("6. Enter validation machine")
 
 
 def choose_menu_option():
@@ -44,17 +47,17 @@ def distribution(input_tape):
     return tape1, tape2, switched_tapes
 
 
-def natural_merging_sort():  # 2+1 edition
-    input_tape = Tape("data.txt")
-    tape1, tape2, switched_tapes = distribution(input_tape)
-
-    if switched_tapes is False:
-        print("Whole list already sorted on input!")
-        # TODO: Rewrite the whole list from input to output
-        return
+def natural_merging_sort(verbose):  # 2+1 edition
     tape3 = Tape("tape3.txt")
+
+    # Display content of the tape before sorting
+    print("Displaying content of tape before sorting")
+    tape3.print_content()
+
+    tape1, tape2, switched_tapes = distribution(tape3)
     tape3.clear_file()
     phase_count = 0
+
     while switched_tapes is True:
         last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
         last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(None)
@@ -89,16 +92,24 @@ def natural_merging_sort():  # 2+1 edition
         tape1.clear_file()
         tape2.clear_file()
         tape3.flush_write()
+        if verbose == 1:
+            print(f"Printing content of tape after {phase_count} phase!")
+            tape3.print_content()
         tape1, tape2, switched_tapes = distribution(tape3)
         if switched_tapes is not False:
             tape3.clear_file()
         phase_count += 1
+    print(f"Sorting finished!")
+    if verbose == 0:
+        print(f"Printing content of tape after sorting finished!")
+        tape3.print_content()
     return phase_count - 1
 
 
 def quit_program():
     delete_file("tape1.txt")
     delete_file("tape2.txt")
+    delete_file("tape3.txt")
 
 
 def delete_file(filename):
@@ -106,10 +117,10 @@ def delete_file(filename):
         os.remove(filename)
 
 
-def run_the_program():
+def run_the_program(verbose=0):
     b_quit_program = False
     while b_quit_program is False:
-        display_menu()
+        display_menu(verbose)
         menu_option = choose_menu_option()
         match menu_option:
             case 1:
@@ -117,11 +128,11 @@ def run_the_program():
             case 2:
                 data_generator.enter_records()
             case 3:
-                natural_merging_sort()
+                natural_merging_sort(verbose=0)
             case 4:
                 b_quit_program = True
                 quit_program()
             case 5:
                 data_generator.generate_fake_records()
             case 6:
-                validate(int(input("How many tests do you want to run?")))
+                validate(int(input("How many tests do you want to run?")), verbose)

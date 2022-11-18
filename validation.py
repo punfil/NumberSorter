@@ -1,5 +1,6 @@
 import math
 
+import constants
 import data_generator
 import data_sorter
 
@@ -27,7 +28,7 @@ def load_data_from_generator():
 
 def count_runs(initial_numbers):
     runs_count = 1
-    for i in range(len(initial_numbers)-1):
+    for i in range(len(initial_numbers) - 1):
         if initial_numbers[i] > initial_numbers[i + 1]:
             runs_count += 1
     return runs_count
@@ -37,17 +38,32 @@ def calculate_theoretical_number_of_phases(initial_numbers):
     return int(math.ceil(math.log2(count_runs(initial_numbers))))
 
 
-def validate(number_of_tests=1000):
+def calculate_blocking_factor(disk_block_size, average_record_size):
+    return constants.size_of_block / 1  # We count block size in number of records.
+
+
+def calculate_theoretical_number_of_reads_and_writes(number_of_records, initial_numbers):
+    return 4 * number_of_records * calculate_theoretical_number_of_phases(initial_numbers) / calculate_blocking_factor()
+
+
+def validate(number_of_tests, verbose):
     number_of_records = 10
     number_of_tests_passed = 0
     for _ in range(number_of_tests):
-        #data_generator.generate_fake_records(number_of_records)
-        phases = data_sorter.natural_merging_sort()
-        sorted_by_program = load_data_sorted_by_program()
+        data_generator.generate_fake_records(number_of_records)
         data_from_input = load_data_from_generator()
-        sorted_by_validator = sorted(data_from_input, key=float)
+
+        phases = data_sorter.natural_merging_sort(verbose)
         theoretical_phases = calculate_theoretical_number_of_phases(data_from_input)
-        if sorted_by_program == sorted_by_validator and len(sorted_by_program) == number_of_records and phases <= theoretical_phases:
+
+        sorted_by_program = load_data_sorted_by_program()
+
+        sorted_by_validator = sorted(data_from_input, key=float)
+
+        theoretical_reads, theoretical_writes = calculate_theoretical_number_of_reads_and_writes(number_of_records,
+                                                                                                 data_from_input)
+        if sorted_by_program == sorted_by_validator and len(
+                sorted_by_program) == number_of_records and phases <= theoretical_phases:
             number_of_tests_passed += 1
         else:
             print(f"Test failed! Passed {number_of_tests_passed} out of {number_of_tests}")

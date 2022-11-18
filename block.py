@@ -1,6 +1,9 @@
+import constants
+
+
 class Block:
-    def __init__(self, size=4):
-        self._size = size
+    def __init__(self):
+        self._size = constants.size_of_block
         self._data = []
 
     def is_full(self):

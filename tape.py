@@ -2,6 +2,7 @@ from block import Block
 from record import Record
 from record import DebugRecord
 
+
 class Tape:
     def __init__(self, filename):
         self._filename = filename
@@ -31,7 +32,7 @@ class Tape:
                     self._end_of_file = True
                     self._read_location_in_file = file.tell()
                     break
-                if lines_consumed == self._block.size-1:
+                if lines_consumed == self._block.size - 1:
                     break
                 line = file.readline()
             self._read_location_in_file = file.tell()
@@ -80,6 +81,29 @@ class Tape:
     def clear_file(self):
         open(self._filename, "w").close()
 
+    def print_disk_io_stats(self):
+        print(f"Tape {self._filename} disk IO stats:")
+        print(f"Reads: {self._read_operations}, writes: {self._write_operations}")
+
+    def print_content(self):
+        curr_tape = self.get_record_from_block()
+        print(f"Printing content of tape: {self.filename}")
+        while curr_tape is not None:
+            print(curr_tape.serialize(), end="")
+            curr_tape = self.get_record_from_block()
+        self.flush_read()
+    @property
+    def read_operations(self):
+        return self._read_operations
+
+    @property
+    def write_operations(self):
+        return self._write_operations
+
     @property
     def end_of_file(self):
         return self._end_of_file
+
+    @property
+    def filename(self):
+        return self._filename
