@@ -92,6 +92,7 @@ class Tape:
             print(curr_tape.serialize(), end="")
             curr_tape = self.get_record_from_block()
         self.flush_read()
+
     @property
     def read_operations(self):
         return self._read_operations

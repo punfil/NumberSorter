@@ -20,9 +20,7 @@ def choose_menu_option():
     return option_chosen
 
 
-def distribution(input_tape):
-    tape1 = Tape("tape1.txt")
-    tape2 = Tape("tape2.txt")
+def distribution(input_tape, tape1, tape2):
     tape1.clear_file()
     tape2.clear_file()
     current_tape = tape1
@@ -44,58 +42,72 @@ def distribution(input_tape):
     tape1.flush_write()
     tape2.flush_write()
     input_tape.flush_read()
-    return tape1, tape2, switched_tapes
+    return switched_tapes
 
 
 def natural_merging_sort(verbose):  # 2+1 edition
-    tape3 = Tape("tape3.txt")
+    tape3 = Tape("tape3.txt")  # Load file with data from generator/user
 
     # Display content of the tape before sorting
     print("Displaying content of tape before sorting")
     tape3.print_content()
 
-    tape1, tape2, switched_tapes = distribution(tape3)
-    tape3.clear_file()
+    # Perform initial distribution
+    tape1 = Tape("tape1.txt")
+    tape2 = Tape("tape2.txt")
+    switched_tapes = distribution(tape3, tape1, tape2)
+    tape3.clear_file()  # Get ready to write here
     phase_count = 0
 
+    # Sort till there's one series (when all numbers distributed to one tape)
     while switched_tapes is True:
+        # Fetch one record at the beginning for each tape
         last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
         last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(None)
-        go_inside = True
+        go_inside = True  # Emulation of do while, enter the loop at least once.
         while tape1.end_of_file is False and tape2.end_of_file is False or go_inside is True:
             go_inside = False
+            # During current series switch between data from tapes depending on curr_value
             while end_of_series_tape1 is False and end_of_series_tape2 is False:
+                # Get data from tape1
                 while end_of_series_tape1 is False and curr_tape1 <= curr_tape2:
                     tape3.add_record_to_block(curr_tape1)
                     last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
+                # Get data from tape2
                 while end_of_series_tape1 is False and end_of_series_tape2 is False and curr_tape1 > curr_tape2:
                     tape3.add_record_to_block(curr_tape2)
                     last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+            # When data (of current series) remain on only one tape, write all of them to the output tape
             while end_of_series_tape1 is False:
                 tape3.add_record_to_block(curr_tape1)
                 last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
             while end_of_series_tape2 is False:
                 tape3.add_record_to_block(curr_tape2)
                 last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+            # We change the series to the next one
             end_of_series_tape1 = False
             end_of_series_tape2 = False
+            # Corner case - when there are only few numbers, it still should sort it, not just rewrite
             if tape1.end_of_file is True and tape2.end_of_file is True and curr_tape1 is not None and curr_tape2 is not None:
                 go_inside = True
+        # When the end_of_file flag is set there might be still some numbers in cache.
         while curr_tape1 is not None:
             tape3.add_record_to_block(curr_tape1)
             last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(curr_tape1)
         while curr_tape2 is not None:
             tape3.add_record_to_block(curr_tape2)
             last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(curr_tape2)
+        # Clear all the variables inside the files
         tape1.flush_read()
         tape2.flush_read()
+        # Get tapes ready for next iteration
         tape1.clear_file()
         tape2.clear_file()
         tape3.flush_write()
         if verbose == 1:
             print(f"Printing content of tape after {phase_count} phase!")
             tape3.print_content()
-        tape1, tape2, switched_tapes = distribution(tape3)
+        switched_tapes = distribution(tape3, tape1, tape2)
         if switched_tapes is not False:
             tape3.clear_file()
         phase_count += 1
@@ -103,7 +115,8 @@ def natural_merging_sort(verbose):  # 2+1 edition
     if verbose == 0:
         print(f"Printing content of tape after sorting finished!")
         tape3.print_content()
-    return phase_count - 1
+        return phase_count - 1
+    return phase_count - 1, tape1, tape2, tape3
 
 
 def quit_program():
@@ -135,4 +148,4 @@ def run_the_program(verbose=0):
             case 5:
                 data_generator.generate_fake_records()
             case 6:
-                validate(int(input("How many tests do you want to run?")), verbose)
+                validate(int(input("How many tests do you want to run?")))
