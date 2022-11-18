@@ -1,5 +1,4 @@
 from block import Block
-from record import Record
 from record import DebugRecord
 
 
@@ -17,12 +16,14 @@ class Tape:
         if self._end_of_file is True:
             self._block.clear()
             return
+        did_read = 0
         with open(self._filename, "r") as file:
             if self._read_location_in_file is not None:
                 file.seek(self._read_location_in_file)
             lines_consumed = 0
             line = file.readline()
             while line is not None:
+                did_read = 1
                 line_len = int(len(line))
                 lines_consumed += 1
                 elements = line.split(" ")
@@ -36,7 +37,8 @@ class Tape:
                     break
                 line = file.readline()
             self._read_location_in_file = file.tell()
-        self._read_operations += 1
+        if did_read:
+            self._read_operations += 1
 
     def save_block(self):
         with open(self._filename, "a+") as file:
@@ -45,8 +47,9 @@ class Tape:
             file.write(self._block.serialize())
             self._write_location_in_file = file.tell()
 
+        if not self._block.is_empty():
+            self._write_operations += 1
         self._block.clear()
-        self._write_operations += 1
 
     def add_record_to_block(self, record):
         self._block.data.append(record)

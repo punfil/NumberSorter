@@ -1,5 +1,6 @@
-from record import Record
 from random import random, randint
+
+from record import Record
 
 
 def generate_records(number_of_records=10):

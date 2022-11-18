@@ -1,5 +1,6 @@
-import data_generator
 import os
+
+import data_generator
 from tape import Tape
 from validation import validate
 

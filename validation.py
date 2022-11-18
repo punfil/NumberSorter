@@ -67,7 +67,7 @@ def validate(number_of_tests):
         sorted_by_validator = sorted(data_from_input, key=float)
 
         theoretical_io = calculate_theoretical_number_of_reads_and_writes(number_of_records,
-                                                                                                 data_from_input)
+                                                                          data_from_input)
         check_io_stats(tape1, theoretical_io)
         check_io_stats(tape2, theoretical_io)
         check_io_stats(tape3, theoretical_io)

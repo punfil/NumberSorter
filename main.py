@@ -1,5 +1,6 @@
-import data_sorter
 import argparse
+
+import data_sorter
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Usage of the program",
