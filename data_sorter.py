@@ -28,18 +28,15 @@ def distribution(input_tape, tape1, tape2):
     current_record = None
     switched_tapes = False
     # Load data from the input tape
+    last_record, current_record, end_of_series = input_tape.fetch_new_record(None)
     while True:
-        last_record = current_record
-        current_record = input_tape.get_record_from_block()
         if current_record is None:
             break
-        if last_record is not None and current_record < last_record:
+        if end_of_series is True:
             switched_tapes = True
-            if current_tape == tape1:
-                current_tape = tape2
-            else:
-                current_tape = tape1
+            current_tape = tape1 if current_tape == tape2 else tape2
         current_tape.add_record_to_block(current_record)
+        last_record, current_record, end_of_series = input_tape.fetch_new_record(current_record)
     tape1.flush_write()
     tape2.flush_write()
     input_tape.flush_read()
