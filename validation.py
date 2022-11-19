@@ -46,10 +46,14 @@ def calculate_theoretical_number_of_reads_and_writes(number_of_records, initial_
     return 4 * number_of_records * calculate_theoretical_number_of_phases(initial_numbers) / calculate_blocking_factor()
 
 
-def check_io_stats(tape, max_io):
-    print(f"Tape {tape.filename} disk IO stats:")
+def print_io_stats(reads, writes, max_io):
+    print(f"Disk IO stats:")
     print(
-        f"Reads: {tape.read_operations}, expected max {max_io}\nWrites: {tape.write_operations}, expected max {max_io}")
+        f"Reads: {reads}, expected max {max_io}\nWrites: {writes}, expected max {max_io}")
+
+
+def check_io_stats(tape1, tape2, tape3):
+    return tape1.read_operations + tape2.read_operations + tape3.read_operations, tape1.write_operations + tape2.write_operations + tape3.write_operations
 
 
 def validate(number_of_tests):
@@ -68,9 +72,8 @@ def validate(number_of_tests):
 
         theoretical_io = calculate_theoretical_number_of_reads_and_writes(number_of_records,
                                                                           data_from_input)
-        check_io_stats(tape1, theoretical_io)
-        check_io_stats(tape2, theoretical_io)
-        check_io_stats(tape3, theoretical_io)
+        sum_of_reads, sum_of_writes = check_io_stats(tape1, tape2, tape3)
+        print_io_stats(sum_of_reads, sum_of_writes, theoretical_io)
         if sorted_by_program == sorted_by_validator and len(
                 sorted_by_program) == number_of_records and phases <= theoretical_phases:
             number_of_tests_passed += 1

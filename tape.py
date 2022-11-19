@@ -58,6 +58,8 @@ class Tape:
 
     def get_record_from_block(self):
         if self._block.is_empty():
+            if self._end_of_file:
+                return None
             self.load_block()
         record = self._block.get_first_element()
         return record
@@ -89,12 +91,14 @@ class Tape:
         print(f"Reads: {self._read_operations}, writes: {self._write_operations}")
 
     def print_content(self):
+        save_reads = self._read_operations
         curr_tape = self.get_record_from_block()
         print(f"Printing content of tape: {self.filename}")
         while curr_tape is not None:
             print(curr_tape.serialize(), end="")
             curr_tape = self.get_record_from_block()
         self.flush_read()
+        self._read_operations = save_reads
 
     @property
     def read_operations(self):
