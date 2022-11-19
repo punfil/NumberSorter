@@ -55,6 +55,10 @@ def print_io_stats(reads, writes, max_io):
 def check_io_stats(tape1, tape2, tape3):
     return tape1.read_operations + tape2.read_operations + tape3.read_operations, tape1.write_operations + tape2.write_operations + tape3.write_operations
 
+def save_data_from_generator(data_from_generator):
+    with open("debug.txt", "w+") as file:
+        for data in data_from_generator:
+            file.write(data.serialize())
 
 def validate(number_of_tests):
     number_of_records = 10
@@ -75,7 +79,7 @@ def validate(number_of_tests):
         sum_of_reads, sum_of_writes = check_io_stats(tape1, tape2, tape3)
         print_io_stats(sum_of_reads, sum_of_writes, theoretical_io)
         if sorted_by_program == sorted_by_validator and len(
-                sorted_by_program) == number_of_records and phases <= theoretical_phases:
+                sorted_by_program) == number_of_records and phases <= theoretical_phases and sum_of_reads <= theoretical_io and sum_of_writes <= theoretical_io:
             number_of_tests_passed += 1
         else:
             print(f"Test failed! Passed {number_of_tests_passed} out of {number_of_tests}")
@@ -84,6 +88,10 @@ def validate(number_of_tests):
             if len(sorted_by_program) != number_of_records:
                 print("Too many numbers or missing numbers!")
             if phases > theoretical_phases:
-                print(f"Program did something slower then expected! ({phases} instead of {theoretical_phases} phases) ")
+                print(f"Program did something slower then expected! ({phases} instead of {theoretical_phases} phases)")
+            if sum_of_reads > theoretical_io:
+                print(f"Number of reads exceeded the max number! ({sum_of_reads} instead of {theoretical_io}")
+            if sum_of_writes > theoretical_io:
+                print(f"Number of writes exceeded the max number! ({sum_of_writes} instead of {theoretical_io}")
             break
     print(f"Passed all tests: {number_of_tests_passed} out of {number_of_tests}")

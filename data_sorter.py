@@ -26,14 +26,14 @@ def distribution(input_tape, tape1, tape2):
     tape2.clear_file()
     current_tape = tape1
     current_record = None
-    switched_tapes = False
+    switched_tapes = 0
     # Load data from the input tape
     last_record, current_record, end_of_series = input_tape.fetch_new_record(None)
     while True:
         if current_record is None:
             break
         if end_of_series is True:
-            switched_tapes = True
+            switched_tapes += 1
             current_tape = tape1 if current_tape == tape2 else tape2
         current_tape.add_record_to_block(current_record)
         last_record, current_record, end_of_series = input_tape.fetch_new_record(current_record)
@@ -56,9 +56,10 @@ def natural_merging_sort(verbose):  # 2+1 edition
     switched_tapes = distribution(tape3, tape1, tape2)
     tape3.clear_file()  # Get ready to write here
     phase_count = 0
+    finished_next_time = False
 
     # Sort till there's one series (when all numbers distributed to one tape)
-    while switched_tapes is True:
+    while True:
         # Fetch one record at the beginning for each tape
         last_tape1, curr_tape1, end_of_series_tape1 = tape1.fetch_new_record(None)
         last_tape2, curr_tape2, end_of_series_tape2 = tape2.fetch_new_record(None)
@@ -105,9 +106,12 @@ def natural_merging_sort(verbose):  # 2+1 edition
         if verbose == 1:
             print(f"Printing content of tape after {phase_count} phase!")
             tape3.print_content()
+        if finished_next_time:
+            break
         switched_tapes = distribution(tape3, tape1, tape2)
-        if switched_tapes is not False:
-            tape3.clear_file()
+        if switched_tapes <= 1:
+            finished_next_time = True
+        tape3.clear_file()
         phase_count += 1
     print(f"Sorting finished!")
     if verbose == 0:
