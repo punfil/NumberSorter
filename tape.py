@@ -25,7 +25,6 @@ class Tape:
             while line is not None:
                 did_read = 1
                 line_len = int(len(line))
-                lines_consumed += 1
                 elements = line.split(" ")
                 if len(elements) == 3:
                     self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
@@ -35,6 +34,7 @@ class Tape:
                     break
                 if lines_consumed == self._block.size - 1:
                     break
+                lines_consumed += 1
                 line = file.readline()
             self._read_location_in_file = file.tell()
         if did_read:
