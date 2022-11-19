@@ -1,4 +1,5 @@
 import math
+import random
 
 import constants
 import data_generator
@@ -55,10 +56,12 @@ def print_io_stats(reads, writes, max_io):
 def check_io_stats(tape1, tape2, tape3):
     return tape1.read_operations + tape2.read_operations + tape3.read_operations, tape1.write_operations + tape2.write_operations + tape3.write_operations
 
+
 def save_data_from_generator(data_from_generator):
     with open("debug.txt", "w+") as file:
         for data in data_from_generator:
-            file.write(data.serialize())
+            file.write(data.serialize()+" "+str(random.randint(100, 199))+" "+str(random.randint(100, 199))+"\n")
+
 
 def validate(number_of_tests):
     number_of_records = 10
@@ -93,5 +96,6 @@ def validate(number_of_tests):
                 print(f"Number of reads exceeded the max number! ({sum_of_reads} instead of {theoretical_io}")
             if sum_of_writes > theoretical_io:
                 print(f"Number of writes exceeded the max number! ({sum_of_writes} instead of {theoretical_io}")
+            save_data_from_generator(data_from_input)
             break
     print(f"Passed all tests: {number_of_tests_passed} out of {number_of_tests}")

@@ -103,6 +103,7 @@ def natural_merging_sort(verbose):  # 2+1 edition
         tape1.clear_file()
         tape2.clear_file()
         tape3.flush_write()
+        phase_count += 1
         if verbose == 1:
             print(f"Printing content of tape after {phase_count} phase!")
             tape3.print_content()
@@ -112,7 +113,7 @@ def natural_merging_sort(verbose):  # 2+1 edition
         if switched_tapes <= 1:
             finished_next_time = True
         tape3.clear_file()
-        phase_count += 1
+
     print(f"Sorting finished!")
     if verbose == 0:
         print(f"Printing content of tape after sorting finished!")
