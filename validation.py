@@ -60,7 +60,7 @@ def check_io_stats(tape1, tape2, tape3):
 def save_data_from_generator(data_from_generator):
     with open("debug.txt", "w+") as file:
         for data in data_from_generator:
-            file.write(data.serialize()+" "+str(random.randint(100, 199))+" "+str(random.randint(100, 199))+"\n")
+            file.write(str(data) + " "+str(random.randint(100, 199))+" "+str(random.randint(100, 199))+"\n")
 
 
 def validate(number_of_tests):
@@ -93,9 +93,9 @@ def validate(number_of_tests):
             if phases > theoretical_phases:
                 print(f"Program did something slower then expected! ({phases} instead of {theoretical_phases} phases)")
             if sum_of_reads > theoretical_io:
-                print(f"Number of reads exceeded the max number! ({sum_of_reads} instead of {theoretical_io}")
+                print(f"Number of reads exceeded the max number! ({sum_of_reads} instead of {theoretical_io})")
             if sum_of_writes > theoretical_io:
-                print(f"Number of writes exceeded the max number! ({sum_of_writes} instead of {theoretical_io}")
+                print(f"Number of writes exceeded the max number! ({sum_of_writes} instead of {theoretical_io})")
             save_data_from_generator(data_from_input)
             break
     print(f"Passed all tests: {number_of_tests_passed} out of {number_of_tests}")

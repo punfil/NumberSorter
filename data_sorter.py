@@ -42,7 +42,6 @@ def distribution(input_tape, tape1, tape2):
     input_tape.flush_read()
     return switched_tapes
 
-
 def natural_merging_sort(verbose):  # 2+1 edition
     tape3 = Tape("tape3.txt")  # Load file with data from generator/user
 
@@ -87,7 +86,7 @@ def natural_merging_sort(verbose):  # 2+1 edition
             end_of_series_tape1 = False
             end_of_series_tape2 = False
             # Corner case - when there are only few numbers, it still should sort it, not just rewrite
-            if tape1.end_of_file is True and tape2.end_of_file is True and curr_tape1 is not None and curr_tape2 is not None:
+            if (tape1.end_of_file is True or tape2.end_of_file is True) and curr_tape1 is not None and curr_tape2 is not None:
                 go_inside = True
         # When the end_of_file flag is set there might be still some numbers in cache.
         while curr_tape1 is not None:
@@ -110,8 +109,10 @@ def natural_merging_sort(verbose):  # 2+1 edition
         if finished_next_time:
             break
         switched_tapes = distribution(tape3, tape1, tape2)
-        if switched_tapes <= 1:
+        if switched_tapes == 1:
             finished_next_time = True
+        if switched_tapes == 0:
+            break
         tape3.clear_file()
 
     print(f"Sorting finished!")
