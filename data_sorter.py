@@ -5,7 +5,13 @@ from tape import Tape
 from validation import validate
 
 
-def display_menu(verbose):
+def display_menu(verbose: int) -> None:
+    """
+    Displays the main menu in the program
+    :rtype: None
+    :type verbose: int
+    :param verbose: Should the function display debug functions
+    """
     print("Hello and welcome to the Disk Sorter!")
     print("1. Automatically generate data")
     print("2. Enter the data manually")
@@ -16,12 +22,24 @@ def display_menu(verbose):
         print("6. Enter validation machine")
 
 
-def choose_menu_option():
+def choose_menu_option() -> int:
+    """
+    Reads the menu option chosen by user and returns it.
+    :rtype: int
+    """
     option_chosen = int(input("Please select menu option\n"))
     return option_chosen
 
 
-def distribution(input_tape, tape1, tape2):
+def distribution(input_tape: Tape, tape1: Tape, tape2: Tape) -> int:
+    """
+    Distributes records between tapes and returns how many times it switched between tapes.
+    :rtype: int
+    :return: How many times did the function switch between tapes.
+    :param input_tape: Tape all the records are on.
+    :param tape1: First tape the records will be written to.
+    :param tape2: Second tape the records will be written to.
+    """
     tape1.clear_file()
     tape2.clear_file()
     current_tape = tape1
@@ -42,7 +60,14 @@ def distribution(input_tape, tape1, tape2):
     input_tape.flush_read()
     return switched_tapes
 
-def natural_merging_sort(verbose):  # 2+1 edition
+
+def natural_merging_sort(verbose: int) -> int:  # 2+1 edition
+    """
+
+    :param verbose:
+    :return:
+    :rtype: object
+    """
     tape3 = Tape("tape3.txt")  # Load file with data from generator/user
 
     # Display content of the tape before sorting
@@ -86,7 +111,8 @@ def natural_merging_sort(verbose):  # 2+1 edition
             end_of_series_tape1 = False
             end_of_series_tape2 = False
             # Corner case - when there are only few numbers, it still should sort it, not just rewrite
-            if (tape1.end_of_file is True or tape2.end_of_file is True) and curr_tape1 is not None and curr_tape2 is not None:
+            if (
+                    tape1.end_of_file is True or tape2.end_of_file is True) and curr_tape1 is not None and curr_tape2 is not None:
                 go_inside = True
         # When the end_of_file flag is set there might be still some numbers in cache.
         while curr_tape1 is not None:

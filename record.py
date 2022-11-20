@@ -19,6 +19,18 @@ class Record:
         else:
             return False
 
+    def __ge__(self, other):
+        if self.calculate_product_of_probabilities() >= other.calculate_product_of_probabilities():
+            return True
+        else:
+            return False
+
+    def __le__(self, other):
+        if self.calculate_product_of_probabilities() <= other.calculate_product_of_probabilities():
+            return True
+        else:
+            return False
+
     def __eq__(self, other):
         return self.calculate_product_of_probabilities() == other.calculate_product_of_probabilities
 

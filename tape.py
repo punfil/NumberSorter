@@ -1,5 +1,5 @@
 from block import Block
-from record import DebugRecord
+from record import DebugRecord, Record
 
 
 class Tape:
@@ -26,7 +26,8 @@ class Tape:
                 line_len = int(len(line))
                 elements = line.split(" ")
                 if len(elements) == 3:
-                    self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
+                    self._block.data.append(Record(float(elements[0]), float(elements[1]), float(elements[2])))  #
+                    # Change to DebugRecord for debugging
                     did_read = 1
                 else:
                     self._end_of_file = True
