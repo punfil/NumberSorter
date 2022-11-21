@@ -145,8 +145,8 @@ def natural_merging_sort(verbose: int) -> int:  # 2+1 edition
     if verbose == 0:
         print(f"Printing content of tape after sorting finished!")
         tape3.print_content()
-        return phase_count - 1
-    return phase_count - 1, tape1, tape2, tape3
+        return phase_count
+    return phase_count, tape1, tape2, tape3
 
 
 def quit_program():

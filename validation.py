@@ -81,6 +81,7 @@ def validate(number_of_tests):
                                                                           data_from_input)
         sum_of_reads, sum_of_writes = check_io_stats(tape1, tape2, tape3)
         print_io_stats(sum_of_reads, sum_of_writes, theoretical_io)
+        print(f"Sorted in {phases}. Expected max {theoretical_phases}")
         if sorted_by_program == sorted_by_validator and len(
                 sorted_by_program) == number_of_records and phases <= theoretical_phases and sum_of_reads <= theoretical_io and sum_of_writes <= theoretical_io:
             number_of_tests_passed += 1
