@@ -20,28 +20,25 @@ class Tape:
             return
         with open(self._filename, "r") as file:
             lines_consumed = 0
-            size_of_file = os.path.getsize(self._filename)
-            line_len = len(file.readline()) # Not good if we load 1.0 it will be shorter
-            file.seek(0)
             if self._read_location_in_file is not None:
-                if size_of_file - self._read_location_in_file <= constants.size_of_block * (line_len+1):
-                    self._end_of_file = True
                 file.seek(self._read_location_in_file)
-            elif size_of_file <= constants.size_of_block * line_len:
-                self._end_of_file = True
             line = file.readline()
+            did_read = 0
             while line is not None:
                 elements = line.split(" ")
                 self._read_location_in_file = file.tell()
                 if len(elements) == 3:
+                    did_read = 1
                     self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
                 else:
+                    self._end_of_file = True
                     break
                 if lines_consumed == self._block.size - 1:
                     break
                 lines_consumed += 1
                 line = file.readline()
-        self._read_operations += 1
+        if did_read:
+            self._read_operations += 1
 
     def save_block(self):
         with open(self._filename, "a+") as file:
