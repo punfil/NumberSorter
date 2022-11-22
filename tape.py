@@ -1,5 +1,6 @@
+import constants
 from block import Block
-from record import DebugRecord, Record
+from record import Record, DebugRecord
 import os
 
 
@@ -17,35 +18,30 @@ class Tape:
         if self._end_of_file is True:
             self._block.clear()
             return
-        did_read = 0
         with open(self._filename, "r") as file:
-            if self._read_location_in_file is not None:
-                file.seek(self._read_location_in_file)
             lines_consumed = 0
-            line = file.readline()
             size_of_file = os.path.getsize(self._filename)
+            line_len = len(file.readline()) # Not good if we load 1.0 it will be shorter
+            file.seek(0)
             if self._read_location_in_file is not None:
-                if size_of_file - self._read_location_in_file <= 4 * len(line):
+                if size_of_file - self._read_location_in_file <= constants.size_of_block * (line_len+1):
                     self._end_of_file = True
-            else:
-                if size_of_file <= 4* len(line):
-                    self._end_of_file = True
+                file.seek(self._read_location_in_file)
+            elif size_of_file <= constants.size_of_block * line_len:
+                self._end_of_file = True
+            line = file.readline()
             while line is not None:
-                line_len = int(len(line))
                 elements = line.split(" ")
                 self._read_location_in_file = file.tell()
                 if len(elements) == 3:
-                    self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))  #
-                    # Change to DebugRecord for debugging
-                    did_read = 1
+                    self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
                 else:
                     break
                 if lines_consumed == self._block.size - 1:
                     break
                 lines_consumed += 1
                 line = file.readline()
-        if did_read:
-            self._read_operations += 1
+        self._read_operations += 1
 
     def save_block(self):
         with open(self._filename, "a+") as file:

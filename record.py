@@ -34,12 +34,6 @@ class Record:
     def __eq__(self, other):
         return self.calculate_product_of_probabilities() == other.calculate_product_of_probabilities
 
-    def deserialize(self, record_loaded):
-        elements = record_loaded.split(' ')
-        self._a_probability = elements[0]
-        self._b_probability = elements[1]
-        self._probabilities_sum = elements[2]
-
     def serialize(self):
         return str(self._a_probability) + " " + str(self._b_probability) + " " + str(self._probabilities_sum) + "\n"
 
@@ -66,7 +60,6 @@ class Record:
     @probabilities_sum.setter
     def probabilities_sum(self, new_value):
         self._probabilities_sum = new_value
-
 
 class DebugRecord(Record):
     def __gt__(self, other):

@@ -2,24 +2,20 @@ import os
 
 import data_generator
 from tape import Tape
-from validation import validate
+import validation
 
 
-def display_menu(verbose: int) -> None:
+def display_menu() -> None:
     """
     Displays the main menu in the program
     :rtype: None
-    :type verbose: int
-    :param verbose: Should the function display debug functions
     """
     print("Hello and welcome to the Disk Sorter!")
+    print("0. Load data from file")
     print("1. Automatically generate data")
     print("2. Enter the data manually")
     print("3. Sort the files")
     print("4. Quit")
-    if verbose == 1:
-        print("5. Generate fake records - int numbers")
-        print("6. Enter validation machine")
 
 
 def choose_menu_option() -> int:
@@ -43,7 +39,7 @@ def distribution(input_tape: Tape, tape1: Tape, tape2: Tape) -> int:
     tape1.clear_file()
     tape2.clear_file()
     current_tape = tape1
-    current_record = None
+    # How many times was the tape switched
     switched_tapes = 0
     # Load data from the input tape
     last_record, current_record, end_of_series = input_tape.fetch_new_record(None)
@@ -61,14 +57,9 @@ def distribution(input_tape: Tape, tape1: Tape, tape2: Tape) -> int:
     return switched_tapes
 
 
-def natural_merging_sort(verbose: int) -> int:  # 2+1 edition
-    """
+def natural_merging_sort(verbose: int) -> (int, Tape, Tape, Tape):  # 2+1 edition
 
-    :param verbose:
-    :return:
-    :rtype: object
-    """
-    tape3 = Tape("tape3.txt")  # Load file with data from generator/user
+    tape3 = Tape("tape3.txt")  # Load file with data
 
     # Display content of the tape before sorting
     print("Displaying content of tape before sorting")
@@ -78,9 +69,13 @@ def natural_merging_sort(verbose: int) -> int:  # 2+1 edition
     tape1 = Tape("tape1.txt")
     tape2 = Tape("tape2.txt")
     switched_tapes = distribution(tape3, tape1, tape2)
+    finished_next_time = False
+    if switched_tapes == 1:
+        finished_next_time = True
+    if switched_tapes == 0:
+        return switched_tapes, tape1, tape2, tape3
     tape3.clear_file()  # Get ready to write here
     phase_count = 0
-    finished_next_time = False
 
     # Sort till there's one series (when all numbers distributed to one tape)
     while True:
@@ -145,7 +140,6 @@ def natural_merging_sort(verbose: int) -> int:  # 2+1 edition
     if verbose == 0:
         print(f"Printing content of tape after sorting finished!")
         tape3.print_content()
-        return phase_count
     return phase_count, tape1, tape2, tape3
 
 
@@ -160,22 +154,40 @@ def delete_file(filename):
         os.remove(filename)
 
 
+def sort_the_files(verbose):
+    if not os.path.exists("tape3.txt"):
+        print("No input file provided. Generate data/enter yours/give me some!")
+        return
+    records_count = sum(1 if len(line.split(" ")) == 3 else 0 for line in open('tape3.txt'))
+    phases, tape1, tape2, tape3 = natural_merging_sort(verbose)
+    max_theoretical_phases = validation.calculate_max_theoretical_number_of_phases(records_count)
+    avg_theoretical_phases = validation.calculate_avg_theoretical_number_of_phases(records_count)
+
+    max_theoretical_io = validation.calculate_max_theoretical_number_of_reads_and_writes(records_count)
+    avg_theoretical_io = validation.calculate_avg_theoretical_number_of_reads_and_writes(records_count)
+
+    sum_of_io_operations = validation.calculate_io_stats(tape1, tape2, tape3)
+    print(
+        f"Disk IO stats.\nReads/writes: {sum_of_io_operations}, expected avg {avg_theoretical_io} and max {max_theoretical_io}")
+    print(f"Sorted in {phases}. Expected avg {avg_theoretical_phases} and max {max_theoretical_phases}")
+
+
 def run_the_program(verbose=0):
     b_quit_program = False
     while b_quit_program is False:
-        display_menu(verbose)
+        display_menu()
         menu_option = choose_menu_option()
         match menu_option:
+            case 0:
+                data_generator.load_from_file(input("Enter filename to load data from: "))
             case 1:
-                data_generator.generate_records()
+                data_generator.generate_records(int(input("How many records to generate?")))
             case 2:
                 data_generator.enter_records()
             case 3:
-                natural_merging_sort(verbose=0)
+                sort_the_files(verbose)
             case 4:
                 b_quit_program = True
                 quit_program()
-            case 5:
-                data_generator.generate_fake_records()
-            case 6:
-                validate(int(input("How many tests do you want to run?")))
+            case 5:  # Hidden option for debug
+                validation.validate_io_operations_and_phases()
