@@ -15,6 +15,7 @@ class Tape:
         self._write_location_in_file = None
 
     def load_block(self):
+        my_size = os.path.getsize(self._filename)
         if self._end_of_file is True:
             self._block.clear()
             return
@@ -23,12 +24,13 @@ class Tape:
             if self._read_location_in_file is not None:
                 file.seek(self._read_location_in_file)
             line = file.readline()
-            did_read = 0
             while line is not None:
-                elements = line.split(" ")
                 self._read_location_in_file = file.tell()
+                if self._read_location_in_file >= my_size:
+                    self._end_of_file = True
+
+                elements = line.split(" ")
                 if len(elements) == 3:
-                    did_read = 1
                     self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
                 else:
                     self._end_of_file = True
@@ -37,8 +39,7 @@ class Tape:
                     break
                 lines_consumed += 1
                 line = file.readline()
-        if did_read:
-            self._read_operations += 1
+        self._read_operations += 1
 
     def save_block(self):
         with open(self._filename, "a+") as file:
