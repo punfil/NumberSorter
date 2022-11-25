@@ -12,7 +12,7 @@ def calculate_max_theoretical_number_of_phases(initial_numbers_cnt):
 
 
 def calculate_avg_theoretical_number_of_phases(initial_numbers_cnt):
-    return int(math.ceil(math.log2(initial_numbers_cnt / 2)))
+    return max(0, int(math.ceil(math.log2(initial_numbers_cnt / 2))))
 
 
 def calculate_blocking_factor():
@@ -34,9 +34,10 @@ def calculate_io_stats(tape1, tape2, tape3):
 
 
 def validate_io_operations_and_phases():
-    for _ in range(1000):
-        num_records = 15
-        data_generator.generate_fake_records(num_records)
+    loop_cnt = int(input("How many tests to run?"))
+    for _ in range(loop_cnt):
+        num_records = random.randint(10, 50)
+        data_generator.generate_records(num_records)
         shutil.copyfile("tape3.txt", "backup.txt")
         phases, tape1, tape2, tape3 = data_sorter.natural_merging_sort(0)
         max_theoretical_phases = calculate_max_theoretical_number_of_phases(num_records)

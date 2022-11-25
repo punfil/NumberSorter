@@ -1,1 +1,1 @@
-size_of_block=4
+size_of_block = 4

@@ -1,7 +1,7 @@
-import constants
-from block import Block
-from record import Record, DebugRecord
 import os
+
+from block import Block
+from record import Record
 
 
 class Tape:
@@ -31,7 +31,7 @@ class Tape:
 
                 elements = line.split(" ")
                 if len(elements) == 3:
-                    self._block.data.append(DebugRecord(float(elements[0]), float(elements[1]), float(elements[2])))
+                    self._block.data.append(Record(float(elements[0]), float(elements[1]), float(elements[2])))
                 else:
                     self._end_of_file = True
                     break

@@ -61,6 +61,7 @@ class Record:
     def probabilities_sum(self, new_value):
         self._probabilities_sum = new_value
 
+
 class DebugRecord(Record):
     def __gt__(self, other):
         if self._a_probability > other._a_probability:

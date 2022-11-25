@@ -1,8 +1,8 @@
 import os
 
 import data_generator
-from tape import Tape
 import validation
+from tape import Tape
 
 
 def display_menu() -> None:
